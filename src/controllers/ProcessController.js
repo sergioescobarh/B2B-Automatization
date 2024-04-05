@@ -21,64 +21,58 @@ const ProcessController = {
       );
       console.log(list);
       const emailDestination = responsibleList[i][1];
-      const content = `<p>Se han activado los siguientes productos:</p>
-       ${list.forEach( e =>  {e['Producto base']}  )} `;
-      sendEmail(emailDestination, "activación productos", content);
+
+      // Supongamos que 'list' es un array de objetos JSON como el que proporcionaste anteriormente.
+
+// Convertir cada objeto JSON en una tabla HTML individual y unirlos
+const htmlTables = list.map(item => {
+    return `
+        <table>
+            <tr>
+                <th>Clave</th>
+                <th>Valor</th>
+            </tr>
+            ${Object.entries(item).map(([key, value]) => `
+                <tr>
+                    <td>${key}</td>
+                    <td>${value}</td>
+                </tr>
+            `).join('')}
+        </table>
+    `;
+}).join('<br><br>'); // Se utiliza <br> para separar cada tabla HTML en el correo
+
+// Unir todas las tablas HTML en un solo contenido HTML
+const htmlContent = `
+    <html>
+    <head>
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Productos para asegurar</h2>
+        ${htmlTables}
+    </body>
+    </html>
+`;
+
+// Envía el correo electrónico
+sendEmail(emailDestination, "Productos B2B para aseguramiento", htmlContent);
+
+    res.status(200).send('proceso exitoso');
     }
 }catch(error) { console.log(error);
 res.status(500).send('ocurrio un error en el proceso general')}
 
-    // XlsxPopulate.fromFileAsync(filePath)
-    //   .then((workbook) => {
-    //     // Procesa el archivo de Excel
-    //     const sheet = workbook.sheet(0);
-    //     const data = sheet.usedRange().value();
-
-    //     // proceso de organizacion de datos
-    //     const titles = data[0].filter((e) => e !== undefined);
-    //     //listar productos en un array de jsons
-    //     const productsList = [];
-    //     for (let i = 1; i < data.length; i++) {
-    //       const product = {};
-    //       for (let j = 0; j < titles.length; j++) {
-    //         product[titles[j]] = data[i][j];
-    //       }
-    //       productsList.push(product);
-    //     }
-    //     const finalProducts = productsList.filter(
-    //       (e) => e["Nro pedido"] !== undefined
-    //     );
-
-    //     //envío de correos de activación
-    //     for (let i = 0; i < responsibleList.length; i++) {
-    //       console.log("trabajando!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    //       const list = finalProducts.filter(
-    //         (e) => e["Producto base"] == responsibleList[i][0]
-    //       );
-    //       console.log(list);
-    //       const emailDestination = responsibleList[i][1];
-    //       const JSONlist = list.map((e) => stringify(e));
-    //       const content = `<p>Se han activado los siguientes productos:${JSONlist}</p>`;
-    //       sendEmail(emailDestination, "activación productos", content);
-    //     }
-
-    //     // Envía la respuesta con los datos procesados
-    //     res.json({
-    //       success: true,
-    //       message: "Archivo procesado correctamente",
-    //       data,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     // Maneja los errores al procesar el archivo
-    //     res
-    //       .status(500)
-    //       .json({
-    //         success: false,
-    //         message: "Error al procesar el archivo",
-    //         error,
-    //       });
-    //   });
   },
   sendEmail: (req, res) => {
     sendEmail(
